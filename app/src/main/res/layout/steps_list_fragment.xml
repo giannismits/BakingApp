@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+<TextView android:id="@+id/steps_label"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/ingredients_recycle_view"
+    android:text="Steps"
+    android:textAlignment="center"
+    android:textSize="20dp"
+    android:textStyle="bold"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+
+
+
+ <android.support.v7.widget.RecyclerView
+     xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/steps_recycler_view"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_below="@+id/steps_label"
+android:layout_alignParentBottom="true" />
+
+
+</RelativeLayout>

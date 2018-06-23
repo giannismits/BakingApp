@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.udacity.giannis.bakingapp.bakindapp">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.ActivityDetails"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:parentActivityName=".ui.BakingMainActivity" />
+        <activity
+            android:name=".ui.StepByStepActivity"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ui.ActivityDetails" />
+        <activity android:name=".ui.BakingMainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".RecipiesWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="org.divenvrsk.widgets.ExampleProvider.ACTION_WIDGET_REFRESH"/>
+                <action android:name="org.divenvrsk.widgets.ExampleProvider.ACTION_WIDGET_SETTINGS"/>
+                <action android:name="org.divenvrsk.widgets.ExampleProvider.ACTION_WIDGET_ABOUT"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/recipies_widget_info" />
+        </receiver>
+
+        <activity android:name=".RecipiesWidgetConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <provider
+            android:name=".db.RecipiesProvider"
+            android:authorities="com.udacity.giannis.bakingapp.bakindapp"
+            android:exported="false"/>
+    </application>
+
+</manifest>
