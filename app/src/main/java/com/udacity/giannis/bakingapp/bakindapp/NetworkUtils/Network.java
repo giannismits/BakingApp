@@ -5,11 +5,12 @@ import com.udacity.giannis.bakingapp.bakindapp.model.Recipes;
 
 import java.util.List;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by giann on 5/25/2018.
@@ -33,14 +34,15 @@ public class Network {
 
         call.enqueue(new Callback<List<Recipes>>() {
             @Override
-            public void onResponse(Response<List<Recipes>> response, Retrofit retrofit) {
+            public void onResponse(Call<List<Recipes>> call, Response<List<Recipes>> response) {
                 listener.onSucces(response);
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<List<Recipes>> call, Throwable t) {
                 listener.onFailure(t.getMessage());
             }
+
         });
     }
 }

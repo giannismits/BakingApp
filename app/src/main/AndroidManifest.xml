@@ -20,7 +20,7 @@
         <activity
             android:name=".ui.StepByStepActivity"
             android:configChanges="orientation|screenSize|layoutDirection"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:parentActivityName=".ui.ActivityDetails" />
         <activity android:name=".ui.BakingMainActivity">
             <intent-filter>

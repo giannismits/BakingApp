@@ -3,4 +3,12 @@
     <string name="appwidget_text">Make something sweet today!!!</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
+
+    <string-array name="recipies_name_spinner">
+        <item>Nutella Pie</item>
+        <item>Brownies</item>
+        <item>Yellow Cake</item>
+        <item>Cheesecake</item>
+
+    </string-array>
 </resources>

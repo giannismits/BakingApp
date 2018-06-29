@@ -11,9 +11,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -22,6 +24,20 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.squareup.picasso.Picasso;
 import com.udacity.giannis.bakingapp.bakindapp.R;
 import com.udacity.giannis.bakingapp.bakindapp.model.Steps;
 
@@ -30,12 +46,14 @@ import java.util.ArrayList;
 
 public class StepByStepFragment extends Fragment{
 
-    private VideoView simplePlayer;
+    private SimpleExoPlayerView simplePlayerView;
+    private SimpleExoPlayer simpleExoPlayer;
     private static String TAG = "StepByStepFragment";
     private ArrayList<Steps> steps;
     private int position;
     private ImageView mNovideo;
     private TextView mDescription;
+    private Button mPrev,mNext;
 
 
     public StepByStepFragment() {
@@ -48,79 +66,100 @@ public class StepByStepFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate( R.layout.player, container, false );
-        simplePlayer = (VideoView) rootView.findViewById( R.id.video_view );
-       mNovideo = (ImageView) rootView.findViewById(R.id.no_video);
-       mDescription = (TextView) rootView.findViewById(R.id.description_step);
+        simplePlayerView = (SimpleExoPlayerView) rootView.findViewById( R.id.video_view );
+        mNovideo = (ImageView) rootView.findViewById(R.id.no_video);
+        mDescription = (TextView) rootView.findViewById(R.id.description_step);
+
+
 
         initializePlayer();
-
-
         return rootView;
     }
 
-    private void initializePlayer(){
+    private void initializePlayer() {
         String videoUrl = getSteps().get(position).getVideoURL();
-            if (videoUrl.contains(".mp4")){
-                simplePlayer.setVideoURI(Uri.parse( videoUrl) );
-                android.widget.MediaController mediaController = new android.widget.MediaController( getContext());
+        String thumpUrl = getSteps().get(position).getThumbnailURL();
+        Uri thumpUri = Uri.parse(thumpUrl);
 
-                mediaController.setMediaPlayer( simplePlayer );
-                simplePlayer.setMediaController( mediaController );
-                mediaController.setAnchorView(simplePlayer);
-                simplePlayer.requestFocus();
-                simplePlayer.start();
+        if (videoUrl==null){
+            simpleExoPlayer.release();
+            simplePlayerView.setVisibility(View.GONE);
+            mNovideo.setVisibility(View.VISIBLE);
+            mNovideo.setImageResource(R.drawable.novideo);
+            return;
 
+        }else  {
+            Uri videoUri = Uri.parse(videoUrl);
+            playVideo(videoUri);
 
-                mediaController.setPrevNextListeners(new View.OnClickListener() {
-                    public void onClick(View v) {
-                    if (position <=getSteps().size()-1){
-                        position++;
-                        initializePlayer();
-                    }else{
-                        return;
-                    }
-                    }
-                }, new View.OnClickListener() {
-                    public void onClick(View v) {
-                        if (position >=0){
-                            position--;
-                            initializePlayer();
-                        }else {
-                            return;
-                        }
-                    }
-                });
+        } if (!thumpUrl.equals("")){
+            if (thumpUrl.contains(".mp4")){
+                playVideo(thumpUri);
             }else {
-                simplePlayer.setVisibility(View.GONE);
+                simpleExoPlayer.release();
+                simplePlayerView.setVisibility(View.GONE);
                 mNovideo.setVisibility(View.VISIBLE);
-                mNovideo.setImageResource(R.drawable.novideo);
+                Picasso.get().load(thumpUrl).error(R.drawable.novideo).into(mNovideo);
             }
-            mDescription.setText(getSteps().get(getPosition()).getDescription());
+            return;
+        }if (videoUrl.equals("") && thumpUrl.equals("")){
+            simpleExoPlayer.release();
+            simplePlayerView.setVisibility(View.GONE);
+            mNovideo.setVisibility(View.VISIBLE);
+            mNovideo.setImageResource(R.drawable.novideo);
+        }
+    }
 
+    private void playVideo(Uri videoUri){
+        if (!videoUri.equals("")){
+            try {
+                BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
 
+                TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+
+                simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+
+                DefaultHttpDataSourceFactory defaultHttpDataSourceFactory = new DefaultHttpDataSourceFactory("Baking_App");
+
+                ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+
+                MediaSource mediaSource = new ExtractorMediaSource(videoUri, defaultHttpDataSourceFactory, extractorsFactory, null, null);
+
+                simplePlayerView.setPlayer(simpleExoPlayer);
+                simpleExoPlayer.prepare(mediaSource);
+                simpleExoPlayer.setPlayWhenReady(true);
+
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+            }
+        }else {
+            simpleExoPlayer.release();
+            simplePlayerView.setVisibility(View.GONE);
+        }
 
     }
 
-
-    private void releasePlayer(){
-        simplePlayer.stopPlayback();
+    @Override
+    public void onStart() {
+        super.onStart();
+        mDescription.setText(getSteps().get(position).getDescription());
     }
+
     @Override
     public void onStop() {
         super.onStop();
-
-        releasePlayer();
+        simpleExoPlayer.release();
     }
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        simplePlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-    }
+//    @SuppressLint("InlinedApi")
+//    private void hideSystemUi() {
+//        simplePlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+//                | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//
+//    }
 
 
     public ArrayList<Steps> getSteps() {
@@ -138,6 +177,7 @@ public class StepByStepFragment extends Fragment{
     public void setPosition(int position) {
         this.position = position;
     }
+
 
 
 

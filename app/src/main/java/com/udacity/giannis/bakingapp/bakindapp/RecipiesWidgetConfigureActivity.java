@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RemoteViews;
+import android.widget.Spinner;
 
 import com.udacity.giannis.bakingapp.bakindapp.R;
 import com.udacity.giannis.bakingapp.bakindapp.ui.BakingMainActivity;
@@ -81,9 +83,16 @@ public class RecipiesWidgetConfigureActivity extends Activity {
         setResult(RESULT_CANCELED);
 
         setContentView(R.layout.recipies_widget_configure);
-        mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
-        findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
 
+        findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.recipies_name_spinner, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
         // Find the widget id from the intent.
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -98,7 +107,7 @@ public class RecipiesWidgetConfigureActivity extends Activity {
             return;
         }
 
-        mAppWidgetText.setText(loadTitlePref(RecipiesWidgetConfigureActivity.this, mAppWidgetId));
+//        mAppWidgetText.setText(loadTitlePref(RecipiesWidgetConfigureActivity.this, mAppWidgetId));
 
     }
 }

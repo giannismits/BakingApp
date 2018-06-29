@@ -21,7 +21,8 @@ import com.udacity.giannis.bakingapp.bakindapp.model.Recipes;
 
 import java.util.List;
 
-import retrofit.Response;
+import retrofit2.Response;
+
 
 public class BakingMainActivity extends AppCompatActivity {
 
