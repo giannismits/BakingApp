@@ -3,6 +3,7 @@ package com.udacity.giannis.bakingapp.bakindapp.ui;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.udacity.giannis.bakingapp.bakindapp.R;
 import com.udacity.giannis.bakingapp.bakindapp.adapters.RecipiesList;
 import com.udacity.giannis.bakingapp.bakindapp.check.IsConnected;
 import com.udacity.giannis.bakingapp.bakindapp.db.RecipiesContract;
+import com.udacity.giannis.bakingapp.bakindapp.db.RecipiesDbHelper;
 import com.udacity.giannis.bakingapp.bakindapp.model.Recipes;
 
 import java.util.List;
@@ -63,17 +65,30 @@ public class BakingMainActivity extends AppCompatActivity {
 
     }
     private void addToDatabase(List<Recipes> recipes){
-        Uri uri = RecipiesContract.RecipiesEntry.CONTENT_URI;
-        ContentResolver cv = getContentResolver();
-        ContentValues contentValues = new ContentValues(  );
-        contentValues.clear();
-        for (int i=0;i<=recipes.size()-1;i++){
-            contentValues.put( RecipiesContract.RecipiesEntry.COLUMN_ID, recipes.get( i ).getId());
-            contentValues.put( RecipiesContract.RecipiesEntry.COLUMN_Name,recipes.get( i ).getName() );
-            contentValues.put( RecipiesContract.RecipiesEntry.COLUMN_Servings,recipes.get( i ).getServings() );
-            cv.insert( uri,contentValues );
+        RecipiesDbHelper recipiesDbHelper = new RecipiesDbHelper(getApplicationContext());
+        if (recipiesDbHelper.getIngredients(1).size()==0){
+            Uri uri = RecipiesContract.RecipiesEntry.CONTENT_URI;
+            Uri uri1 = RecipiesContract.RecipiesEntry.CONTENT_URI_INGREDIENTS;
+            ContentResolver cv = getContentResolver();
+            ContentValues contentValues = new ContentValues(  );
+            ContentValues contentValues2 = new ContentValues(  );
+            contentValues.clear();
+            contentValues2.clear();
+            for (int i=0;i<=recipes.size()-1;i++){
+                contentValues.put( RecipiesContract.RecipiesEntry.COLUMN_ID, recipes.get( i ).getId());
+                contentValues.put( RecipiesContract.RecipiesEntry.COLUMN_Name,recipes.get( i ).getName() );
+                contentValues.put( RecipiesContract.RecipiesEntry.COLUMN_Servings,recipes.get( i ).getServings() );
+                for (int j=0;j<=recipes.get(i).getIngredients().size()-1;j++){
+                    contentValues2.put( RecipiesContract.RecipiesEntry.COLUMN_ID, recipes.get( i ).getId());
+                    contentValues2.put(RecipiesContract.RecipiesEntry.COLUMN_MEASURE,(recipes.get(i).getIngredients().get(j).getMeasure()));
+                    contentValues2.put(RecipiesContract.RecipiesEntry.COLUMN_INGREDIENT,(recipes.get(i).getIngredients().get(j).getIngredient()));
+                    contentValues2.put(RecipiesContract.RecipiesEntry.COLUMN_QUANTITY,(recipes.get(i).getIngredients().get(j).getQuantity()));
+                    cv.insert(uri1,contentValues2);
+                }
+                cv.insert( uri,contentValues );
+            }
+
         }
+
     }
-
-
 }

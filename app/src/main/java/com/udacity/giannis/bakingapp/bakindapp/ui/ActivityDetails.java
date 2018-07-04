@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 
@@ -31,6 +32,7 @@ public class ActivityDetails extends AppCompatActivity{
     private ArrayList<Steps> steps= new ArrayList<>();
     private int position;
     private FrameLayout mIngridients,mSteps,mStepsDetails;
+    private ImageButton mPrev,mNext;
 
 
 
@@ -43,9 +45,11 @@ public class ActivityDetails extends AppCompatActivity{
         mIngridients = (FrameLayout) findViewById(R.id.ingredients_container);
         mSteps = (FrameLayout) findViewById(R.id.steps_container);
 
+        mPrev = (ImageButton) findViewById(R.id.prev);
+        mNext = (ImageButton) findViewById(R.id.next);
 
 
-    Bundle intent = getIntent().getBundleExtra("BUNDLE");
+        Bundle intent = getIntent().getBundleExtra("BUNDLE");
     String name = intent.getString("RECIPIE_NAME");
     ingredients =  intent.getParcelableArrayList("INGREDIENTS");
     steps = intent.getParcelableArrayList("STEPS");

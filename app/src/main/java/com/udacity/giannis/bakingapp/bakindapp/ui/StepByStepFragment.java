@@ -53,7 +53,7 @@ public class StepByStepFragment extends Fragment{
     private int position;
     private ImageView mNovideo;
     private TextView mDescription;
-    private Button mPrev,mNext;
+
 
 
     public StepByStepFragment() {
@@ -69,6 +69,7 @@ public class StepByStepFragment extends Fragment{
         simplePlayerView = (SimpleExoPlayerView) rootView.findViewById( R.id.video_view );
         mNovideo = (ImageView) rootView.findViewById(R.id.no_video);
         mDescription = (TextView) rootView.findViewById(R.id.description_step);
+
 
 
 
@@ -150,16 +151,7 @@ public class StepByStepFragment extends Fragment{
         super.onStop();
         simpleExoPlayer.release();
     }
-//    @SuppressLint("InlinedApi")
-//    private void hideSystemUi() {
-//        simplePlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-//                | View.SYSTEM_UI_FLAG_FULLSCREEN
-//                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-//
-//    }
+
 
 
     public ArrayList<Steps> getSteps() {

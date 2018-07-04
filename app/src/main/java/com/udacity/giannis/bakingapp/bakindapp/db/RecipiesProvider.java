@@ -19,12 +19,14 @@ public class RecipiesProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     static final int RECIPIES=100;
+    static final int INGREDIENTS = 200;
 
     static UriMatcher buildUriMatcher(){
         final UriMatcher matcher= new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = RecipiesContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority,RecipiesContract.PATH_RECIPIES,RECIPIES);
+        matcher.addURI(authority,RecipiesContract.PATH_INGREDIENTS,INGREDIENTS);
         return matcher;
     }
     @Override
@@ -52,6 +54,7 @@ public class RecipiesProvider extends ContentProvider {
                     );
                     return mCursor;
                 }
+
                 default: throw new UnsupportedOperationException("unknown Uri" + uri);
             }
         }catch (Exception e){
@@ -83,9 +86,18 @@ public class RecipiesProvider extends ContentProvider {
                     if (id>0){
                         uriToReturn = RecipiesContract.RecipiesEntry.buildUri(id);
                     }else {
-                        throw new android.database.SQLException("Error while insering a row in : " +uri);
+                        throw new android.database.SQLException("Error while inserting a row in : " +uri);
                     }break;
-                }default: throw  new UnsupportedOperationException("unknown uri" + uri);
+
+                }case INGREDIENTS:{
+                    long id =sqLiteDatabase.insert( RecipiesContract.RecipiesEntry.TABLE_NAME_INGREDIENTS,null,contentValues);
+                    if (id>0){
+                        uriToReturn = RecipiesContract.RecipiesEntry.buildUri(id);
+                    }else {
+                        throw new android.database.SQLException("Error while inserting a row in : " +uri);
+                    }break;
+                }
+                default: throw  new UnsupportedOperationException("unknown uri" + uri);
             }mContext.getContentResolver().notifyChange(uri,null);
             return uriToReturn;
         }catch (Exception e){

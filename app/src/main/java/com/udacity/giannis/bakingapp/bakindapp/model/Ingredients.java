@@ -28,6 +28,11 @@ public class Ingredients implements Parcelable {
         ingredient = in.readString();
     }
 
+    public Ingredients(Double quantity, String measure, String ingredient) {
+        this.quantity = quantity;
+        this.measure = measure;
+        this.ingredient = ingredient;
+    }
 
     public static final Creator<Ingredients> CREATOR = new Creator<Ingredients>() {
         @Override
@@ -40,6 +45,8 @@ public class Ingredients implements Parcelable {
             return new Ingredients[size];
         }
     };
+
+
 
     @Override
     public int describeContents() {

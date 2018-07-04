@@ -6,13 +6,22 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
+import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import com.udacity.giannis.bakingapp.bakindapp.R;
 import com.udacity.giannis.bakingapp.bakindapp.db.RecipiesContract;
 import com.udacity.giannis.bakingapp.bakindapp.db.RecipiesDbHelper;
+import com.udacity.giannis.bakingapp.bakindapp.model.Ingredients;
 import com.udacity.giannis.bakingapp.bakindapp.ui.BakingMainActivity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Implementation of App Widget functionality.
@@ -20,60 +29,25 @@ import com.udacity.giannis.bakingapp.bakindapp.ui.BakingMainActivity;
  */
 public class RecipiesWidget extends AppWidgetProvider {
 
-    public static String GO_TO_THE_ACTIVITY= "gototheactivity";
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
-//        RecipiesDbHelper recipiesDbHelper = new RecipiesDbHelper( context );
-//
-//        String title = null;
-//        Cursor cursor;
-//        cursor=recipiesDbHelper.getReadableDatabase().rawQuery( "SELECT * FROM RECIPIES WHERE Id="+2,null );
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//                title = cursor.getString(cursor.getColumnIndex( RecipiesContract.RecipiesEntry.COLUMN_Name));
-//            } while (cursor.moveToNext());
-//        }
-//        CharSequence widgetText = RecipiesWidgetConfigureActivity.loadTitlePref( context, appWidgetId );
+                                int appWidgetId , int pos) {
+        int position = pos+1;
+
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews( context.getPackageName(), R.layout.recipies_widget );
-        views.setTextViewText( R.id.appwidget_text, "Make  sweet today!!!" );
 
-
-        Intent intent = new Intent(context ,BakingMainActivity.class);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent,0);
-
-
-
-        views.setOnClickPendingIntent(R.id.recipe_name_widget,pendingIntent);
-
-        // Instruct the widget manager to update the widget
+        Intent intent = new Intent(context ,WidgetList.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, position);
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+        views.setRemoteAdapter(R.id.widget_recycle, intent);
         appWidgetManager.updateAppWidget( appWidgetId, views );
-
-
-
 
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+
         // There may be multiple widgets active, so update all of them
-
-        RemoteViews views = new RemoteViews( context.getPackageName(), R.xml.recipies_widget_info );
-
-        // Instruct the widget manager to update the widget
-
-
-        Intent intent = new Intent(context ,BakingMainActivity.class);
-
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent,0);
-
-
-
-        views.setOnClickPendingIntent(R.id.recipe_name_widget,pendingIntent);
-        appWidgetManager.updateAppWidget(appWidgetIds, views);
 
     }
 

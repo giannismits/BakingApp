@@ -52,6 +52,9 @@
             android:name=".db.RecipiesProvider"
             android:authorities="com.udacity.giannis.bakingapp.bakindapp"
             android:exported="false"/>
+        <service android:name=".WidgetList"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
     </application>
 
 </manifest>

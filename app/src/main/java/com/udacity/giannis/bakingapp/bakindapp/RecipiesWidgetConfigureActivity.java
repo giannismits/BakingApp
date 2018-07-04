@@ -24,22 +24,19 @@ public class RecipiesWidgetConfigureActivity extends Activity {
     private static final String PREFS_NAME = "com.udacity.giannis.bakingapp.bakindapp.RecipiesWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-    EditText mAppWidgetText;
+    Spinner spinner;
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             final Context context = RecipiesWidgetConfigureActivity.this;
-
-            // When the button is clicked, store the string locally
-            String widgetText = mAppWidgetText.getText().toString();
-            saveTitlePref( context, mAppWidgetId, widgetText );
+            int pos = spinner.getSelectedItemPosition();
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance( context );
-            RecipiesWidget.updateAppWidget( context, appWidgetManager, mAppWidgetId );
+            RecipiesWidget.updateAppWidget( context, appWidgetManager, mAppWidgetId,pos );
 
             // Make sure we pass back the original appWidgetId
             Intent resultValue = new Intent();
-            resultValue.putExtra( AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId );
+            resultValue.putExtra( AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
             setResult( RESULT_OK, resultValue );
             finish();
         }
@@ -77,7 +74,6 @@ public class RecipiesWidgetConfigureActivity extends Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
         // Set the result to CANCELED.  This will cause the widget host to cancel
         // out of the widget placement if the user presses the back button.
         setResult(RESULT_CANCELED);
@@ -85,7 +81,7 @@ public class RecipiesWidgetConfigureActivity extends Activity {
         setContentView(R.layout.recipies_widget_configure);
 
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+       spinner = (Spinner) findViewById(R.id.spinner);
 // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.recipies_name_spinner, android.R.layout.simple_spinner_item);
@@ -107,7 +103,6 @@ public class RecipiesWidgetConfigureActivity extends Activity {
             return;
         }
 
-//        mAppWidgetText.setText(loadTitlePref(RecipiesWidgetConfigureActivity.this, mAppWidgetId));
 
     }
 }
