@@ -19,9 +19,11 @@
             android:parentActivityName=".ui.BakingMainActivity" />
         <activity
             android:name=".ui.StepByStepActivity"
-            android:configChanges="orientation|screenSize|layoutDirection"
+
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.ActivityDetails" />
+            android:parentActivityName=".ui.ActivityDetails"/>
+            <!--android:configChanges="orientation|screenSize|layoutDirection"-->
+            />
         <activity android:name=".ui.BakingMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

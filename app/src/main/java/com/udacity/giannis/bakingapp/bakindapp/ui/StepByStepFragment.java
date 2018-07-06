@@ -53,7 +53,8 @@ public class StepByStepFragment extends Fragment{
     private int position;
     private ImageView mNovideo;
     private TextView mDescription;
-
+    private long videoPosition;
+    private String videoUrl,thumpUrl;
 
 
     public StepByStepFragment() {
@@ -72,15 +73,21 @@ public class StepByStepFragment extends Fragment{
 
 
 
-
-        initializePlayer();
+        if (savedInstanceState!=null){
+            videoPosition=savedInstanceState.getLong("player_position");
+            position=savedInstanceState.getInt("arraylist_postition");
+            videoUrl=savedInstanceState.getString("video_url");
+            thumpUrl=savedInstanceState.getString("thumb_url");
+        }else{
+            videoUrl = getSteps().get(position).getVideoURL();
+            thumpUrl = getSteps().get(position).getThumbnailURL();
+        }
+        initializePlayer(videoUrl,thumpUrl);
         return rootView;
+
     }
 
-    private void initializePlayer() {
-        String videoUrl = getSteps().get(position).getVideoURL();
-        String thumpUrl = getSteps().get(position).getThumbnailURL();
-        Uri thumpUri = Uri.parse(thumpUrl);
+    private void initializePlayer(String videoUrl,String thumpUrl) {
 
         if (videoUrl==null){
             simpleExoPlayer.release();
@@ -95,6 +102,7 @@ public class StepByStepFragment extends Fragment{
 
         } if (!thumpUrl.equals("")){
             if (thumpUrl.contains(".mp4")){
+                Uri thumpUri = Uri.parse(thumpUrl);
                 playVideo(thumpUri);
             }else {
                 simpleExoPlayer.release();
@@ -110,7 +118,6 @@ public class StepByStepFragment extends Fragment{
             mNovideo.setImageResource(R.drawable.novideo);
         }
     }
-
     private void playVideo(Uri videoUri){
         if (!videoUri.equals("")){
             try {
@@ -127,9 +134,10 @@ public class StepByStepFragment extends Fragment{
                 MediaSource mediaSource = new ExtractorMediaSource(videoUri, defaultHttpDataSourceFactory, extractorsFactory, null, null);
 
                 simplePlayerView.setPlayer(simpleExoPlayer);
+                simpleExoPlayer.seekTo(videoPosition);
                 simpleExoPlayer.prepare(mediaSource);
                 simpleExoPlayer.setPlayWhenReady(true);
-
+                hideSystemUi();
             } catch (Exception e) {
                 Log.e(TAG, e.toString());
             }
@@ -138,7 +146,19 @@ public class StepByStepFragment extends Fragment{
             simplePlayerView.setVisibility(View.GONE);
         }
 
+
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+         outState.putLong("player_position",simpleExoPlayer.getCurrentPosition());
+         outState.putInt("arraylist_postition",getPosition());
+         outState.putString("video_url",getSteps().get(position).getVideoURL());
+         outState.putString("thumb_url",getSteps().get(position).getThumbnailURL());
+    }
+
+
 
     @Override
     public void onStart() {
@@ -170,7 +190,15 @@ public class StepByStepFragment extends Fragment{
         this.position = position;
     }
 
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        simplePlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-
+    }
 
 }
